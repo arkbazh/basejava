@@ -14,7 +14,7 @@ public class ArrayStorage {
         Objects.requireNonNull(r, "resume must not be null");
 
         if (size >= CAPACITY) {
-            throw new IllegalStateException("Storage overflow: capacity=" + CAPACITY);
+            throw new IllegalStateException("storage overflow: capacity = " + CAPACITY);
         }
         storage[size] = r;
         size++;
@@ -68,4 +68,3 @@ public class ArrayStorage {
         size = 0;
     }
 }
-
