@@ -2,25 +2,30 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * Array, based storage for Resumes.
+ * Array-based storage for Resumes.
  */
 public class ArrayStorage {
-    Resume[] storage = new Resume[10000];
+    private static final int CAPACITY = 10000;
+
+    private final Resume[] storage = new Resume[CAPACITY];
+    private int size = 0;
 
     void save(Resume r) {
-        for (int i = 0; i < storage.length; i++) {
-            if (storage[i] == null) {
-                storage[i] = r;
-                return;
-            }
+        Objects.requireNonNull(r, "resume must not be null");
+
+        if (size >= CAPACITY) {
+            throw new IllegalStateException("Storage overflow: capacity=" + CAPACITY);
         }
+        storage[size] = r;
+        size++;
     }
 
     Resume get(String uuid) {
         Objects.requireNonNull(uuid, "uuid must not be null");
 
-        for (Resume r : storage) {
-            if (r != null && uuid.equals(r.uuid)) {
+        for (int i = 0; i < size; i++) {
+            Resume r = storage[i];
+            if (uuid.equals(r.uuid)) {
                 return r;
             }
         }
@@ -30,28 +35,22 @@ public class ArrayStorage {
     void delete(String uuid) {
         Objects.requireNonNull(uuid, "uuid must not be null");
 
-        for (int i = 0; i < storage.length; i++) {
+        for (int i = 0; i < size; i++) {
             Resume r = storage[i];
 
-            if (r != null && uuid.equals(r.uuid)) {
-                for (int j = i; j < storage.length - 1; j++) {
+            if (uuid.equals(r.uuid)) {
+                for (int j = i; j < size - 1; j++) {
                     storage[j] = storage[j + 1];
                 }
-                storage[storage.length - 1] = null;
+                storage[size - 1] = null;
+                size--;
                 return;
             }
         }
     }
 
     int size() {
-        int count = 0;
-        for (Resume r : storage) {
-            if (r == null) {
-                return count;
-            }
-            count++;
-        }
-        return count;
+        return size;
     }
 
     /**
@@ -61,13 +60,12 @@ public class ArrayStorage {
      * @return an array of {@link Resume} objects currently stored in the storage
      */
     Resume[] getAll() {
-        int size = size();
         return Arrays.copyOf(storage, size);
     }
 
     void clear() {
-        int size = size();
         Arrays.fill(storage, 0, size, null);
+        size = 0;
     }
 }
 
