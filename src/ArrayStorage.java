@@ -24,9 +24,8 @@ public class ArrayStorage {
         Objects.requireNonNull(uuid, "uuid must not be null");
 
         for (int i = 0; i < size; i++) {
-            Resume r = storage[i];
-            if (uuid.equals(r.uuid)) {
-                return r;
+            if (uuid.equals(storage[i].uuid)) {
+                return storage[i];
             }
         }
         return null;
@@ -36,15 +35,11 @@ public class ArrayStorage {
         Objects.requireNonNull(uuid, "uuid must not be null");
 
         for (int i = 0; i < size; i++) {
-            Resume r = storage[i];
-
-            if (uuid.equals(r.uuid)) {
-                for (int j = i; j < size - 1; j++) {
-                    storage[j] = storage[j + 1];
-                }
+            if (uuid.equals(storage[i].uuid)) {
+                storage[i] = storage[size - 1];
                 storage[size - 1] = null;
                 size--;
-                return;
+                break;
             }
         }
     }
