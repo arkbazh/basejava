@@ -1,9 +1,6 @@
 import java.util.Arrays;
 import java.util.Objects;
 
-/**
- * Array-based storage for Resumes.
- */
 public class ArrayStorage {
     private static final int CAPACITY = 10000;
 
@@ -24,9 +21,8 @@ public class ArrayStorage {
         Objects.requireNonNull(uuid, "uuid must not be null");
 
         for (int i = 0; i < size; i++) {
-            Resume r = storage[i];
-            if (uuid.equals(r.uuid)) {
-                return r;
+            if (uuid.equals(storage[i].uuid)) {
+                return storage[i];
             }
         }
         return null;
@@ -36,15 +32,11 @@ public class ArrayStorage {
         Objects.requireNonNull(uuid, "uuid must not be null");
 
         for (int i = 0; i < size; i++) {
-            Resume r = storage[i];
-
-            if (uuid.equals(r.uuid)) {
-                for (int j = i; j < size - 1; j++) {
-                    storage[j] = storage[j + 1];
-                }
+            if (uuid.equals(storage[i].uuid)) {
+                storage[i] = storage[size - 1];
                 storage[size - 1] = null;
                 size--;
-                return;
+                break;
             }
         }
     }
@@ -53,12 +45,6 @@ public class ArrayStorage {
         return size;
     }
 
-    /**
-     * Retrieves all stored resumes in the form of an array.
-     * The array contains only non-null elements up to the current size of the storage.
-     *
-     * @return an array of {@link Resume} objects currently stored in the storage
-     */
     Resume[] getAll() {
         return Arrays.copyOf(storage, size);
     }
