@@ -6,59 +6,63 @@ import java.util.Objects;
 import model.Resume;
 
 public class ArrayStorage {
-    private static final int CAPACITY = 10000;
+    private static final int CAPACITY = 10_000;
 
     private final Resume[] storage = new Resume[CAPACITY];
     private int size = 0;
 
     public void save(Resume r) {
-        Objects.requireNonNull(r, "Resume must not be null");
+        Objects.requireNonNull(r, "resume must not be null");
+
+        String uuid = r.getUuid();
 
         if (size >= CAPACITY) {
-            throw new IllegalStateException("Storage overflow: capacity = " + CAPACITY);
+            throw new IllegalStateException("storage overflow: capacity: " + CAPACITY);
         }
 
-        if (getIndex(r) > 0) {
-            throw new IllegalArgumentException("Resume with UUID " + r.toString() + " already exists");
+        if (findIndex(uuid) >= 0) {
+            throw new IllegalArgumentException("resume already exists: " + uuid);
         }
 
-        storage[size] = r;
-        size++;
+        storage[size++] = r;
     }
 
     public Resume get(String uuid) {
         Objects.requireNonNull(uuid, "uuid must not be null");
 
-        for (int i = 0; i < size; i++) {
-            if (uuid.equals(storage[i].getUuid())) {
-                return storage[i];
-            }
+        int index = findIndex(uuid);
+
+        if (index < 0) {
+            throw new IllegalArgumentException("resume not found: " + uuid);
         }
-        return null;
+
+        return storage[index];
     }
 
     public void update(Resume r) {
-        Objects.requireNonNull(r, "Resume must not be null");
+        Objects.requireNonNull(r, "resume must not be null");
 
-        if (getIndex(r) < 0) {
-            throw new IllegalArgumentException("Resume with UUID " + r.toString() + " not exists");
+        String uuid = r.getUuid();
+        int index = findIndex(uuid);
+
+        if (index < 0) {
+            throw new IllegalArgumentException("resume not found: " + uuid);
         }
 
-        storage[getIndex(r)] = r;
-
+        storage[index] = r;
     }
 
     public void delete(String uuid) {
         Objects.requireNonNull(uuid, "uuid must not be null");
 
-        for (int i = 0; i < size; i++) {
-            if (uuid.equals(storage[i].toString())) {
-                storage[i] = storage[size - 1];
-                storage[size - 1] = null;
-                size--;
-                break;
-            }
+        int index = findIndex(uuid);
+
+        if (index < 0) {
+            throw new IllegalArgumentException("resume not found: " + uuid);
         }
+
+        storage[index] = storage[--size];
+        storage[size] = null;
     }
 
     public int size() {
@@ -74,13 +78,11 @@ public class ArrayStorage {
         size = 0;
     }
 
-    private int getIndex(Resume r) {
-        Objects.requireNonNull(r, "Resume must not be null");
-
-        String uuid = r.toString();
+    private int findIndex(String uuid) {
+        Objects.requireNonNull(uuid, "uuid must not be null");
 
         for (int i = 0; i < size; i++) {
-            if (uuid.equals(storage[i].toString())) {
+            if (uuid.equals(storage[i].getUuid())) {
                 return i;
             }
         }
