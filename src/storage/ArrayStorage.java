@@ -2,7 +2,6 @@ package storage;
 
 import java.util.Arrays;
 import java.util.Objects;
-
 import model.Resume;
 
 public class ArrayStorage {
@@ -14,11 +13,11 @@ public class ArrayStorage {
     public void save(Resume r) {
         Objects.requireNonNull(r, "resume must not be null");
 
-        String uuid = r.getUuid();
-
         if (size >= CAPACITY) {
             throw new IllegalStateException("storage overflow: capacity: " + CAPACITY);
         }
+
+        String uuid = r.getUuid();
 
         if (findIndex(uuid) >= 0) {
             throw new IllegalArgumentException("resume already exists: " + uuid);

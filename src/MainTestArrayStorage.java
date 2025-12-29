@@ -2,7 +2,7 @@ import model.Resume;
 import storage.ArrayStorage;
 
 /**
- * Test for your ArrayStorage implementation
+ * Test for your ArrayStorage implementation.
  */
 public class MainTestArrayStorage {
     static final ArrayStorage ARRAY_STORAGE = new ArrayStorage();
