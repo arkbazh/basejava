@@ -1,85 +1,55 @@
 package storage;
 
-import java.util.Arrays;
-import java.util.Objects;
 import model.Resume;
 
-public class ArrayStorage {
-    private static final int CAPACITY = 10_000;
+import java.util.Arrays;
 
-    private final Resume[] storage = new Resume[CAPACITY];
-    private int size = 0;
-
-    public void save(Resume r) {
-        Objects.requireNonNull(r, "resume must not be null");
-
-        if (size >= CAPACITY) {
-            throw new IllegalStateException("storage overflow: capacity: " + CAPACITY);
-        }
-
-        String uuid = r.getUuid();
-
-        if (findIndex(uuid) >= 0) {
-            throw new IllegalArgumentException("resume already exists: " + uuid);
-        }
-
-        storage[size++] = r;
-    }
-
-    public Resume get(String uuid) {
-        Objects.requireNonNull(uuid, "uuid must not be null");
-
-        int index = findIndex(uuid);
-
-        if (index < 0) {
-            throw new IllegalArgumentException("resume not found: " + uuid);
-        }
-
-        return storage[index];
-    }
-
-    public void update(Resume r) {
-        Objects.requireNonNull(r, "resume must not be null");
-
-        String uuid = r.getUuid();
-        int index = findIndex(uuid);
-
-        if (index < 0) {
-            throw new IllegalArgumentException("resume not found: " + uuid);
-        }
-
-        storage[index] = r;
-    }
-
-    public void delete(String uuid) {
-        Objects.requireNonNull(uuid, "uuid must not be null");
-
-        int index = findIndex(uuid);
-
-        if (index < 0) {
-            throw new IllegalArgumentException("resume not found: " + uuid);
-        }
-
-        storage[index] = storage[--size];
-        storage[size] = null;
-    }
-
-    public int size() {
-        return size;
-    }
-
-    public Resume[] getAll() {
-        return Arrays.copyOf(storage, size);
-    }
+/**
+ * Array based storage for Resumes
+ */
+public class ArrayStorage extends AbstractArrayStorage {
 
     public void clear() {
         Arrays.fill(storage, 0, size, null);
         size = 0;
     }
 
-    private int findIndex(String uuid) {
-        Objects.requireNonNull(uuid, "uuid must not be null");
+    public void update(Resume r) {
+        int index = getIndex(r.getUuid());
+        if (index == -1) {
+            System.out.println("Resume " + r.getUuid() + " not exist");
+        } else {
+            storage[index] = r;
+        }
+    }
 
+    public void save(Resume r) {
+        if (getIndex(r.getUuid()) != -1) {
+            System.out.println("Resume " + r.getUuid() + " already exist");
+        } else if (size >= STORAGE_LIMIT) {
+            System.out.println("Storage overflow");
+        } else {
+            storage[size] = r;
+            size++;
+        }
+    }
+
+    public void delete(String uuid) {
+        int index = getIndex(uuid);
+        if (index == -1) {
+            System.out.println("Resume " + uuid + " not exist");
+        } else {
+            storage[index] = storage[size - 1];
+            storage[size - 1] = null;
+            size--;
+        }
+    }
+
+    public Resume[] getAll() {
+        return Arrays.copyOfRange(storage, 0, size);
+    }
+
+    protected int getIndex(String uuid) {
         for (int i = 0; i < size; i++) {
             if (uuid.equals(storage[i].getUuid())) {
                 return i;
