@@ -3,18 +3,20 @@ package storage;
 import model.Resume;
 
 public interface Storage {
-
-    void clear();
-
-    void update(Resume r);
-
+    // CRUD
     void save(Resume r);
 
     Resume get(String uuid);
 
+    void update(Resume r);
+
     void delete(String uuid);
+
+    // Queries
+    int size();
 
     Resume[] getAll();
 
-    int size();
+    // Maintenance
+    void clear();
 }
