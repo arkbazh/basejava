@@ -1,9 +1,9 @@
-package storage;
+package org.example.storage;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import model.Resume;
+import org.example.model.Resume;
 
 /**
  * Array-based storage for Resumes.

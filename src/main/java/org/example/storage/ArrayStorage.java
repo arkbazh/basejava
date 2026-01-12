@@ -1,6 +1,6 @@
-package storage;
+package org.example.storage;
 
-import model.Resume;
+import org.example.model.Resume;
 
 /**
  * Array-based storage for Resumes.

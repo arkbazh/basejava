@@ -1,7 +1,7 @@
-package storage;
+package org.example.storage;
 
 import java.util.Arrays;
-import model.Resume;
+import org.example.model.Resume;
 
 public class SortedArrayStorage extends AbstractArrayStorage {
 
