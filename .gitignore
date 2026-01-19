@@ -37,3 +37,11 @@ build/
 
 ### Mac OS ###
 .DS_Store
+/nbproject/
+
+# Editor temp/backup files
+*.un~
+*~
+.*.swp
+.DS_Store
+EOF
