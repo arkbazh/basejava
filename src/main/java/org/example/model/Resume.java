@@ -1,23 +1,31 @@
 package org.example.model;
 
-public class Resume implements Comparable<Resume> {
+import java.util.Objects;
+import java.util.UUID;
 
-    private String uuid;
+public class Resume implements Comparable<Resume> {
+    private final String uuid;
+
+    public Resume() {
+        this(UUID.randomUUID().toString());
+    }
+
+    public Resume(String uuid) {
+        this.uuid = Objects.requireNonNull(uuid);
+    }
 
     public String getUuid() {
         return uuid;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
-
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
 
         Resume resume = (Resume) o;
 
