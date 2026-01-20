@@ -1,8 +1,10 @@
 package org.example.storage;
 
 import java.util.Arrays;
-import java.util.NoSuchElementException;
 import java.util.Objects;
+import org.example.exception.ExistStorageException;
+import org.example.exception.NotExistStorageException;
+import org.example.exception.StorageOverflowException;
 import org.example.model.Resume;
 
 /**
@@ -15,18 +17,18 @@ public abstract class AbstractArrayStorage implements Storage {
     protected int size = 0;
 
     @Override
-    public final void save(Resume r) {
+    public final void save(final Resume r) {
         Objects.requireNonNull(r, "Resume must not be null");
 
         if (size >= STORAGE_LIMIT) {
-            throw new IllegalStateException("Storage overflow");
+            throw new StorageOverflowException();
         }
 
-        String uuid = r.getUuid();
+        final String uuid = r.getUuid();
 
-        int index = findIndex(uuid);
+        final int index = findIndex(uuid);
         if (index >= 0) {
-            throw new IllegalArgumentException("Resume already exists: " + r.getUuid());
+            throw new ExistStorageException(uuid);
         }
 
         insertResume(r, index);
@@ -34,21 +36,21 @@ public abstract class AbstractArrayStorage implements Storage {
     }
 
     @Override
-    public final Resume get(String uuid) {
+    public final Resume get(final String uuid) {
         Objects.requireNonNull(uuid, "Uuid must not be null");
 
         return storage[getExistingIndex(uuid)];
     }
 
     @Override
-    public final void update(Resume r) {
+    public final void update(final Resume r) {
         Objects.requireNonNull(r, "Resume must not be null");
 
         storage[getExistingIndex(r.getUuid())] = r;
     }
 
     @Override
-    public final void delete(String uuid) {
+    public final void delete(final String uuid) {
         Objects.requireNonNull(uuid, "Uuid must not be null");
 
         deleteResume(getExistingIndex(uuid));
@@ -72,17 +74,17 @@ public abstract class AbstractArrayStorage implements Storage {
         size = 0;
     }
 
-    private int getExistingIndex(String uuid) {
-        int index = findIndex(uuid);
-        if (index < 0) {
-            throw new NoSuchElementException("Resume not found");
-        }
-        return index;
-    }
-
     protected abstract int findIndex(String uuid);
 
     protected abstract void insertResume(Resume r, int index);
 
     protected abstract void deleteResume(int index);
+
+    private int getExistingIndex(final String uuid) {
+        final int index = findIndex(uuid);
+        if (index < 0) {
+            throw new NotExistStorageException(uuid);
+        }
+        return index;
+    }
 }
