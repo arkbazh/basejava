@@ -2,8 +2,8 @@ package org.example.storage;
 
 import java.util.Arrays;
 import java.util.Objects;
-import org.example.exception.ExistStorageException;
-import org.example.exception.NotExistStorageException;
+import org.example.exception.ResumeAlreadyExistsException;
+import org.example.exception.ResumeNotFoundException;
 import org.example.exception.StorageOverflowException;
 import org.example.model.Resume;
 
@@ -28,7 +28,7 @@ public abstract class AbstractArrayStorage implements Storage {
 
         final int index = findIndex(uuid);
         if (index >= 0) {
-            throw new ExistStorageException(uuid);
+            throw new ResumeAlreadyExistsException(uuid);
         }
 
         insertResume(r, index);
@@ -83,7 +83,7 @@ public abstract class AbstractArrayStorage implements Storage {
     private int getExistingIndex(final String uuid) {
         final int index = findIndex(uuid);
         if (index < 0) {
-            throw new NotExistStorageException(uuid);
+            throw new ResumeNotFoundException(uuid);
         }
         return index;
     }
