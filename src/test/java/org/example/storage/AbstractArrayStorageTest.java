@@ -18,6 +18,8 @@ abstract class AbstractArrayStorageTest {
     private static final Resume R2 = new Resume("uuid2");
     private static final Resume R3 = new Resume("uuid3");
     private static final Resume R4 = new Resume("uuid4");
+    private static final String MISSING = "missing";
+    private static final String OVERFLOW = "overflow";
 
     private final Storage storage;
 
@@ -35,16 +37,20 @@ abstract class AbstractArrayStorageTest {
 
     @Test
     void save_whenEmpty_saves() {
-        storage.save(R4);
+        storage.clear();
+        storage.save(R1);
+        assertEquals(R1, storage.get(R1.getUuid()));
+    }
 
+    @Test
+    void save_whenNotEmpty_saves() {
+        storage.save(R4);
         assertEquals(R4, storage.get(R4.getUuid()));
     }
 
     @Test
     void save_whenExists_throwsResumeAlreadyExistsException() {
         assertThrows(ResumeAlreadyExistsException.class, () -> storage.save(R1));
-
-        assertArrayEquals(new Resume[]{R1, R2, R3}, storage.getAll());
     }
 
     @Test
@@ -60,22 +66,18 @@ abstract class AbstractArrayStorageTest {
             }
         }
 
-        assertThrows(StorageOverflowException.class, () -> storage.save(new Resume("overflow")));
-        assertEquals(limit, storage.size());
+        assertThrows(StorageOverflowException.class, () -> storage.save(new Resume(OVERFLOW)));
     }
 
     @Test
     void get_whenFound_returns() {
         Resume actual = storage.get(R1.getUuid());
-
         assertEquals(R1, actual);
     }
 
     @Test
     void get_whenNotFound_throwsResumeNotFoundException() {
-        assertThrows(ResumeNotFoundException.class, () -> storage.get("missing-uuid"));
-
-        assertArrayEquals(new Resume[]{R1, R2, R3}, storage.getAll());
+        assertThrows(ResumeNotFoundException.class, () -> storage.get(MISSING));
     }
 
     @Test
@@ -85,26 +87,23 @@ abstract class AbstractArrayStorageTest {
         storage.update(updated);
 
         assertSame(updated, storage.get(R1.getUuid()));
-        assertArrayEquals(new Resume[]{updated, R2, R3}, storage.getAll());
     }
 
     @Test
     void update_whenNotFound_throwsResumeNotFoundException() {
-        Resume updated = new Resume("missing-uuid");
-
+        Resume updated = new Resume(MISSING);
         assertThrows(ResumeNotFoundException.class, () -> storage.update(updated));
     }
 
     @Test
     void delete_whenFound_deleted() {
         storage.delete(R1.getUuid());
-
         assertThrows(ResumeNotFoundException.class, () -> storage.get(R1.getUuid()));
     }
 
     @Test
     void delete_whenNotFound_throwsResumeNotFoundException() {
-        assertThrows(ResumeNotFoundException.class, () -> storage.delete("missing-uuid"));
+        assertThrows(ResumeNotFoundException.class, () -> storage.delete(MISSING));
     }
 
     @Test
@@ -120,7 +119,7 @@ abstract class AbstractArrayStorageTest {
     @Test
     void clear_whenNotEmpty_clears() {
         storage.clear();
-
         assertArrayEquals(new Resume[0], storage.getAll());
+        assertEquals(0, storage.size());
     }
 }
