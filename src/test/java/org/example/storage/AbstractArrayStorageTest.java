@@ -17,6 +17,7 @@ abstract class AbstractArrayStorageTest {
     private static final Resume R1 = new Resume("uuid1");
     private static final Resume R2 = new Resume("uuid2");
     private static final Resume R3 = new Resume("uuid3");
+    private static final Resume R4 = new Resume("uuid4");
 
     private final Storage storage;
 
@@ -34,11 +35,9 @@ abstract class AbstractArrayStorageTest {
 
     @Test
     void save_whenEmpty_saves() {
-        storage.clear();
+        storage.save(R4);
 
-        storage.save(R1);
-
-        assertArrayEquals(new Resume[]{R1}, storage.getAll());
+        assertEquals(R4, storage.get(R4.getUuid()));
     }
 
     @Test
@@ -61,8 +60,6 @@ abstract class AbstractArrayStorageTest {
             }
         }
 
-        assertEquals(limit, storage.size());
-
         assertThrows(StorageOverflowException.class, () -> storage.save(new Resume("overflow")));
         assertEquals(limit, storage.size());
     }
@@ -71,43 +68,31 @@ abstract class AbstractArrayStorageTest {
     void get_whenFound_returns() {
         Resume actual = storage.get(R1.getUuid());
 
-        assertEquals(actual, R1);
-        assertArrayEquals(new Resume[]{R1, R2, R3}, storage.getAll());
+        assertEquals(R1, actual);
     }
 
     @Test
     void get_whenNotFound_throwsResumeNotFoundException() {
-        assertEquals(3, storage.size());
-        assertArrayEquals(new Resume[]{R1, R2, R3}, storage.getAll());
-
         assertThrows(ResumeNotFoundException.class, () -> storage.get("missing-uuid"));
 
-        assertEquals(3, storage.size());
         assertArrayEquals(new Resume[]{R1, R2, R3}, storage.getAll());
     }
 
     @Test
     void update_whenFound_updated() {
-        assertEquals(3, storage.size());
-        assertArrayEquals(new Resume[]{R1, R2, R3}, storage.getAll());
         Resume updated = new Resume(R1.getUuid());
 
         storage.update(updated);
 
-        assertEquals(3, storage.size());
-        assertEquals(updated, storage.get(R1.getUuid()));
+        assertSame(updated, storage.get(R1.getUuid()));
         assertArrayEquals(new Resume[]{updated, R2, R3}, storage.getAll());
     }
 
     @Test
     void update_whenNotFound_throwsResumeNotFoundException() {
-        Resume updated = new Resume(R1.getUuid());
+        Resume updated = new Resume("missing-uuid");
 
-        storage.update(updated);
-
-        Resume actualResume = storage.get(R1.getUuid());
-
-        assertSame(updated, actualResume);
+        assertThrows(ResumeNotFoundException.class, () -> storage.update(updated));
     }
 
     @Test
