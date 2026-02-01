@@ -23,6 +23,5 @@ public class SortedArrayStorage extends AbstractArrayStorage {
         if (numMoved > 0) {
             System.arraycopy(storage, index + 1, storage, index, numMoved);
         }
-        size--;
     }
 }

@@ -53,9 +53,9 @@ public abstract class AbstractArrayStorage implements Storage {
     public final void delete(final String uuid) {
         Objects.requireNonNull(uuid, "Uuid must not be null");
 
-        deleteResume(getExistingIndex(uuid));
-
-        storage[size] = null;
+        int index = getExistingIndex(uuid);
+        deleteResume(index);
+        storage[--size] = null;
     }
 
     @Override
