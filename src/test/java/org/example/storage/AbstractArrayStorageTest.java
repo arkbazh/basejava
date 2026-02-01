@@ -70,7 +70,7 @@ abstract class AbstractArrayStorageTest {
     }
 
     @Test
-    void get_whenFound_returns() {
+    void get_whenResumeExists_returnResume() {
         Resume actual = storage.get(R1.getUuid());
         assertEquals(R1, actual);
     }
@@ -123,3 +123,7 @@ abstract class AbstractArrayStorageTest {
         assertEquals(0, storage.size());
     }
 }
+
+// - в коде 6 раз вызывается R1.getUuid(). Это uuid можно сделать полем
+//
+// - перенеси size--; из deleteResume() в delete, поскольку эта строка дублируется в наследниках AbstractArrayStorage
